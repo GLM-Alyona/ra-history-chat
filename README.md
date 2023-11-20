@@ -1,70 +1,119 @@
-# Getting Started with Create React App
+История чата
+===
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Необходимо реализовать один из компонентов чата — историю сообщений:
+![Чат](./src/assets/preview.png)
 
-## Available Scripts
+## Данные
 
-In the project directory, you can run:
+Список сообщений, передаваемый в компонент, представляет собой _массив объектов_, каждый из которых представляет собой сообщение, которое необходимо отразить в истории. Сообщение имеет следующие свойства:
+- `id` — уникальный идентификатор сообщения, _строка_;
+- `from` — автор сообщения, _объект_;
+- `type` — тип сообщения, _строка_, варианты значений: `response`, `message`, `typing`;
+- `time` — время публикации сообщения, _строка_;
+- `text` — текст сообщения, _строка_, может отсутствовать.
 
-### `yarn start`
+## Описание компонента
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Для отображения списка создайте компонент `MessageHistory`, который принимает следующие атрибуты:
+- `list` — список сообщений, _массив объектов_, по умолчанию пустой массив.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Если список сообщений пуст, то компонент не должен иметь какого-либо представления в DOM.
 
-### `yarn test`
+Компонент должен создавать на основе списка предложений следующий HTML-код:
+```html
+<ul>
+  <li class="clearfix">
+    <div class="message-data align-right">
+      <span class="message-data-time">10:10</span> &nbsp; &nbsp;
+      <span class="message-data-name">Ольга</span>
+      <i class="fa fa-circle me"></i>
+    </div>
+    <div class="message other-message float-right">
+      Привет, Виктор. Как дела? Как идёт работа над проектом?
+    </div>
+  </li>
+  <li>
+    <div class="message-data">
+      <span class="message-data-name"><i class="fa fa-circle online"></i> Виктор</span>
+      <span class="message-data-time">10:12</span>
+    </div>
+    <div class="message my-message">
+      Привет. Давай сегодня созвонимся. Проект практически готов, и у меня есть что показать.
+    </div>
+  </li>
+  <!-- … и так далее -->
+</ul>
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Где каждый тег `<li>` — сообщение из массива. Для отображения сообщений в чате необходимо использовать следующие компоненты:
+- `Message` — если тип сообщения равен `message`;
+- `Response` — если тип сообщения равен `response`;
+- `Typing` — если тип сообщения равен `typing`.
 
-### `yarn build`
+Все три компонента принимают следующие аргументы:
+- `from` — автор сообщения, _объект_;
+- `message` — сообщение, _объект_.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Пример использования
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```jsx
+const messages = [{
+  id: 'chat-5-1090',
+  from: { name: 'Ольга' },
+  type: 'response',
+  time: '10:10',
+  text: 'Привет, Виктор. Как дела? Как идёт работа над проектом?'
+}];
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+// в компоненте App:
+return (
+  <div className="clearfix container">
+    <div className="chat">
+      <div className="chat-history">
+        <MessageHistory list={messages} />
+      </div>
+    </div>  
+  </div>
+);
+```
 
-### `yarn eject`
+Данные для сообщений:
+```js
+const messages = [{
+  id: 'chat-5-1090',
+  from: { name: 'Ольга' },
+  type: 'response',
+  time: '10:10',
+  text: 'Привет, Виктор. Как дела? Как идёт работа над проектом?'
+}, {
+  id: 'chat-5-1091',
+  from: { name: 'Виктор' },
+  type: 'message',
+  time: '10:12',
+  text: 'Привет. Давай сегодня созвонимся. Проект практически готов, и у меня есть что показать.'
+}, {
+  id: 'chat-5-1092',
+  from: { name: 'Ольга' },
+  type: 'response',
+  time: '10:14',
+  text: 'Не уверена, что сегодня получится. Всё ещё в офисе. Давай уточню через час. Возникли ли какие-либо проблемы на последней стадии проекта?'
+}, {
+  id: 'chat-5-1093',
+  from: { name: 'Виктор' },
+  type: 'message',
+  time: '10:20',
+  text: 'Нет, всё прошло гладко. Очень хочу показать всё команде.'
+}, {
+  id: 'chat-5-1094',
+  from: { name: 'Виктор' },
+  type: 'typing',
+  time: '10:31'
+}];
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Реализация
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Необходимо реализовать компонент `MessageHistory`. Важно: вам нужно реализовать только список истории, аватарки и боковую панель реализовывать не нужно.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Используйте файл из каталога CSS для стилизации.
